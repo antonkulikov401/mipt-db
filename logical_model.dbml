@@ -1,0 +1,99 @@
+Project VideoSharing {
+  database_type: 'DynamoDB'
+  Note: '''
+    # Video sharing platform
+  '''
+}
+
+Table Content {
+  content_id integer pk
+  channel_id integer
+  uploaded_dttm timestamp [not null]
+  title varchar(64) [not null]
+  description varchar(4096)
+  thumbnail_link string [not null]
+  views "integer >= 0" [not null, default: 0]
+  likes "integer >= 0" [not null, default: 0]
+  dislikes "integer >= 0" [not null, default: 0]
+}
+
+Table Video {
+  video_id integer pk
+  content_id integer
+  resolution integer [not null]
+  link string [not null]
+
+  indexes {
+    content_id
+  }
+}
+
+Table Playlist {
+  playlist_id integer pk
+  creator_id integer
+  name varchar(64) [not null]
+  description varchar(4096)
+}
+
+Table PlaylistContent {
+  playlist_id integer
+  content_id integer
+
+  indexes {
+    playlist_id
+  }
+}
+
+Table User {
+  user_id integer pk
+  name varchar(64) [not null]
+  avatar_link string
+}
+
+Table WatchHistory {
+  user_id integer
+  content_id integer
+
+  indexes {
+    user_id
+  }
+}
+
+Table LikeHistory {
+  user_id integer
+  content_id integer
+  like bool [not null, note: '`true` means user liked content, `false` means user disliked content']
+
+  indexes {
+    user_id
+  }
+}
+
+Table Channel {
+  channel_id integer pk
+  name varchar(64) [not null]
+  description varchar(4096) [note: 'Channel description']
+  subscribers "integer >= 0" [not null, default: 0, note: 'Number of subscribers']
+}
+
+Table Subscribtion {
+  user_id integer
+  channel_id integer
+
+  indexes {
+    user_id
+  }
+}
+
+Ref: Content.content_id < Video.content_id
+Ref: Channel.channel_id < Content.channel_id
+Ref: Channel.channel_id < Playlist.creator_id
+Ref: Playlist.playlist_id < PlaylistContent.playlist_id
+Ref: Content.content_id < PlaylistContent.content_id
+Ref: User.user_id < WatchHistory.user_id
+Ref: Content.content_id < WatchHistory.content_id
+Ref: User.user_id < LikeHistory.user_id
+Ref: Content.content_id < LikeHistory.content_id
+Ref: User.user_id - Channel.channel_id
+Ref: User.user_id < Subscribtion.user_id
+Ref: Channel.channel_id < Subscribtion.channel_id
