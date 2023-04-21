@@ -6,21 +6,31 @@ Project VideoSharing {
 }
 
 Table Content {
-  content_id integer pk
-  channel_id integer
-  uploaded_dttm timestamp [not null]
+  content_id bigint pk
+  channel_id bigint
+  uploaded_dttm timestamp [not null, default: `now()`]
   title varchar(64) [not null]
   description varchar(4096)
   thumbnail_link string [not null]
-  views "integer >= 0" [not null, default: 0]
-  likes "integer >= 0" [not null, default: 0]
-  dislikes "integer >= 0" [not null, default: 0]
+  views "bigint >= 0" [not null, default: 0]
+  likes "bigint >= 0" [not null, default: 0]
+  dislikes "bigint >= 0" [not null, default: 0]
+}
+
+enum Resolution {
+  144p
+  360p
+  480p
+  720p
+  1080p
+  1440p
+  2160p
 }
 
 Table Video {
-  video_id integer pk
-  content_id integer
-  resolution integer [not null]
+  video_id bigint pk
+  content_id bigint
+  resolution Resolution [not null]
   link string [not null]
 
   indexes {
@@ -29,15 +39,15 @@ Table Video {
 }
 
 Table Playlist {
-  playlist_id integer pk
-  creator_id integer
+  playlist_id bigint pk
+  creator_id bigint
   name varchar(64) [not null]
   description varchar(4096)
 }
 
 Table PlaylistContent {
-  playlist_id integer
-  content_id integer
+  playlist_id bigint
+  content_id bigint
 
   indexes {
     playlist_id
@@ -45,14 +55,14 @@ Table PlaylistContent {
 }
 
 Table User {
-  user_id integer pk
+  user_id bigint pk
   name varchar(64) [not null]
   avatar_link string
 }
 
 Table WatchHistory {
-  user_id integer
-  content_id integer
+  user_id bigint
+  content_id bigint
 
   indexes {
     user_id
@@ -60,8 +70,8 @@ Table WatchHistory {
 }
 
 Table LikeHistory {
-  user_id integer
-  content_id integer
+  user_id bigint
+  content_id bigint
   like bool [not null, note: '`true` means user liked content, `false` means user disliked content']
 
   indexes {
@@ -70,15 +80,15 @@ Table LikeHistory {
 }
 
 Table Channel {
-  channel_id integer pk
+  channel_id bigint pk
   name varchar(64) [not null]
   description varchar(4096) [note: 'Channel description']
-  subscribers "integer >= 0" [not null, default: 0, note: 'Number of subscribers']
+  subscribers "bigint >= 0" [not null, default: 0, note: 'Number of subscribers']
 }
 
 Table Subscribtion {
-  user_id integer
-  channel_id integer
+  user_id bigint
+  channel_id bigint
 
   indexes {
     user_id
